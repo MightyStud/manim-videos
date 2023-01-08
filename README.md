@@ -20,3 +20,15 @@ Some of the code is based on the [community version of manim](https://github.com
     ```python
     from manim import *
     ```
+
+## To run manim code run from terminal
+
+```bash
+    manim [OPTIONS] FILE [SCENES]
+```
+
+## Disclaimer 
+
+The code presented here was used to create animation videos in the youtube channel, hence it is only intented for personal documentation and doesn't contain thorough explaination.
+
+Head to the documentation of [manim](https://3b1b.github.io/manim/)([community version](https://docs.manim.community/en/stable/index.html)) to learn about the library.

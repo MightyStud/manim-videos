@@ -2,7 +2,7 @@ from manim import *
 import math 
 
 #changes according to scene before running in terminal 
-config.background_color = BLACK
+config.background_color = "#1E1E1E"
 
 class nneq(Scene):
     def construct(self):
@@ -245,6 +245,8 @@ class ReLU(Scene):
         self.wait()
 
 class model(Scene):
+
+
     def construct(self):
         ax = Axes(               
             x_range=[-3,2],
@@ -316,3 +318,76 @@ class model(Scene):
         self.wait()
         self.play(Transform(A_extra,eq))
         self.wait()
+
+class Math(Scene):
+    def construct(self):
+        za = MathTex(r"z_{j, i}^{[l]} &= \sum_k w_{j, k}^{[l]} a_{k, i}^{[l - 1]} + b_j^{[l]}, \\a_{j, i}^{[l]} &= g_j^{[l]}(z_{1, i}^{[l]}, \dots, z_{j, i}^{[l]}, \dots, z_{n^{[l]}, i}^{[l]}).")
+        vec = MathTex(r"""
+        \begin{bmatrix}
+        z_{1, i}^{[l]} \\
+        \vdots \\
+        z_{j, i}^{[l]} \\
+        \vdots \\
+        z_{n^{[l]}, i}^{[l]}
+        \end{bmatrix} &=
+        \begin{bmatrix}
+        w_{1, 1}^{[l]} & \dots & w_{1, k}^{[l]} & \dots & w_{1, n^{[l - 1]}}^{[l]} \\
+        \vdots & \ddots & \vdots & \ddots & \vdots \\
+        w_{j, 1}^{[l]} & \dots & w_{j, k}^{[l]} & \dots & w_{j, n^{[l - 1]}}^{[l]} \\
+        \vdots & \ddots & \vdots & \ddots & \vdots \\
+        w_{n^{[l]}, 1}^{[l]} & \dots & w_{n^{[l]}, k}^{[l]} & \dots & w_{n^{[l]}, n^{[l - 1]}}^{[l]}
+        \end{bmatrix}
+        \begin{bmatrix}
+        a_{1, i}^{[l - 1]} \\
+        \vdots \\
+        a_{k, i}^{[l - 1]} \\
+        \vdots \\
+        a_{n^{[l - 1]}, i}^{[l - 1]}
+        \end{bmatrix} +
+        \begin{bmatrix}
+        b_1^{[l]} \\
+        \vdots \\
+        b_j^{[l]} \\
+        \vdots \\
+        b_{n^{[l]}}^{[l]}
+        \end{bmatrix}, \\
+        \begin{bmatrix}
+        a_{1, i}^{[l]} \\
+        \vdots \\
+        a_{j, i}^{[l]} \\
+        \vdots \\
+        a_{n^{[l]}, i}^{[l]}
+        \end{bmatrix} &=
+        \begin{bmatrix}
+        g_1^{[l]}(z_{1, i}^{[l]}, \dots, z_{j, i}^{[l]}, \dots, z_{n^{[l]}, i}^{[l]}) \\
+        \vdots \\
+        g_j^{[l]}(z_{1, i}^{[l]}, \dots, z_{j, i}^{[l]}, \dots, z_{n^{[l]}, i}^{[l]}) \\
+        \vdots \\
+        g_{n^{[l]}}^{[l]}(z_{1, i}^{[l]}, \dots, z_{j, i}^{[l]}, \dots, z_{n^{[l]}, i}^{[l]}) \\
+        \end{bmatrix}.
+        """, font_size=40)
+
+        backwardderv = MathTex(r"""
+                \frac{\partial J}{\partial w_{j, k}^{[l]}} &= \sum_i \frac{\partial J}{\partial z_{j, i}^{[l]}} \frac{\partial z_{j, i}^{[l]}}{\partial w_{j, k}^{[l]}} = \sum_i \frac {\partial J}{\partial z_{j, i}^{[l]}} a_{k, i}^{[l - 1]}, \\
+                \frac{\partial J}{\partial b_j^{[l]}} &= \sum_i \frac{\partial J}{\partial z_{j, i}^{[l]}} \frac{\partial z_{j, i}^{[l]}}{\partial b_j^{[l]}} = \sum_i \frac{\partial J}{\partial z_{j, i}^{[l]}}. """,
+                font_size=50)
+
+        
+        zd = MathTex(r"""
+\frac{\partial J}{\partial z_{j, i}^{[l]}} = \sum_p \frac{\partial J}{\partial a_{p, i}^{[l]}} \frac{\partial a_{p, i}^{[l]}}{\partial z_{j, i}^{[l]}},
+""", font_size=60)
+
+
+        self.play(Write(za, run_time=5))
+        self.wait()
+        self.play(FadeOut(za, run_time=2))
+        self.play(Write(vec, run_time=8))
+        self.wait()
+        self.play(FadeOut(vec, run_time=2))
+        self.wait()
+        self.play(Write(backwardderv, run_time=5))
+        self.wait()
+        self.play(FadeOut(backwardderv, run_time=2))
+        self.play(Write(zd), run_time=3)
+        self.wait()
+

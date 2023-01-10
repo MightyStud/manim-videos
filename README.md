@@ -27,7 +27,7 @@ Some of the code is based on the [community version of manim](https://github.com
     manim [OPTIONS] FILE [SCENES]
 ```
 
-## Disclaimer 
+## Disclaimer
 
 The code presented here was used to create animation videos in the youtube channel, hence it is only intented for personal documentation and doesn't contain thorough explaination.
 

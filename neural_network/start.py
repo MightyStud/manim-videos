@@ -1,7 +1,7 @@
 from manim import *
 import math 
 
-#changes according to scene
+#changes according to scene before running in terminal 
 config.background_color = BLACK
 
 class nneq(Scene):
@@ -112,8 +112,8 @@ class Test(Scene):
             }
         )
         ax.to_edge(RIGHT)
-        graph = ax.plot(lambda x: - x**3 - 2 * x**2 + 2 * x + 1, x_range=[-4,4], color=MAROON_C)
-        graph2 = ax.plot(lambda x:  4.492*x +3.07 , x_range=[-4,4], color=TEAL_C)
+        graph = ax.plot(lambda x: - x**3 - 2 * x**2 + 2 * x + 1, x_range=[-4,4], color=BLACK)
+        graph2 = ax.plot(lambda x:  -17.7052 * x - 5.5595 , x_range=[-4,4], color=TEAL_C)
         
 
         Z1 = MathTex(r"Z_1 = W_1x + b_1", font_size=50, color=MAROON_C)
@@ -126,10 +126,10 @@ class Test(Scene):
         Z3_n = MathTex(r"Z_3 = n_3 (W_3x + b_3)", font_size=50, color=MAROON_C)
         Z4_n = MathTex(r"Z_4 = n_4 (W_4x + b_4)", font_size=50, color=MAROON_C)
 
-        Z1_num = MathTex(r"Z_1 = 3.26 (1.08x -3.17)", font_size=50, color=MAROON_C)
-        Z2_num = MathTex(r"Z_2 = -2.44 (3.1x -3.83)", font_size=50, color=MAROON_C)
-        Z3_num = MathTex(r"Z_3 = -2.43 (-1.42x + 2.74)", font_size=50, color=MAROON_C)
-        Z4_num = MathTex(r"Z_4 = 3.39 (1.5x + 3.66)", font_size=50, color=MAROON_C)
+        Z1_num = MathTex(r"Z_1 = -3.85 (2.82x -2.75)", font_size=50, color=MAROON_C)
+        Z2_num = MathTex(r"Z_2 = -1.52 (-1.64x + 0.18)", font_size=50, color=MAROON_C)
+        Z3_num = MathTex(r"Z_3 = -1.04 (0.26x  - 0.59)", font_size=50, color=MAROON_C)
+        Z4_num = MathTex(r"Z_4 = 4.34 (-2.09x - 4.05)", font_size=50, color=MAROON_C)
     
 
         Z = VGroup(Z1, Z2, Z3, Z4).arrange(DOWN, center=False, aligned_edge=LEFT).to_edge(UL).shift(DOWN*1.9)
@@ -138,7 +138,7 @@ class Test(Scene):
         Z_num = VGroup(Z1_num, Z2_num, Z3_num, Z4_num).arrange(DOWN, center=False, aligned_edge=LEFT).to_edge(UL).shift(DOWN*1.9)
 
         Z_sum =  MathTex(r"Z = Z_1 + Z_2 + Z_3 + Z_4 + b", font_size=50, color=TEAL_C).next_to(Z_num,DOWN)
-        Z_sumed = MathTex(r"Z = 4.492x + 3.07", font_size=90, color=TEAL_C).to_edge(LEFT)
+        Z_sumed = MathTex(r"Z = -17.7 x - 5.55", font_size=80, color=TEAL_C).to_edge(LEFT)
     
 
         self.play(Create(ax))
@@ -195,27 +195,124 @@ class Activation(Scene):
 
 class ReLU(Scene):
     def construct(self):
-        relu0 = MathTex(r"f(x) = Rectified Linear Unit")
-        relu1 =  MathTex(r"f(x) = ReLU(x)")
-        relu2 =  MathTex(r"f(x) = ReLU(x)")
-        relu3 =  MathTex(r"f(x) = max(x,0)")
-        relu4 =  MathTex(r"f(x) = max(Wx + b,0)")
+        ax = Axes(x_range=[-6,6], y_range=[-4,4], x_length=8, y_length=6, tips=False, stroke_width=1, axis_config={'color': WHITE}).move_to(RIGHT*2)
+
+
+        relu0 = Tex(r"f(x) = Rectified Linear Unit", font_size=100, color=MAROON_C,substrings_to_isolate="x")
+        relu1 =  MathTex(r"f(x) &= ReLU(x)", font_size=65, color=MAROON_C,substrings_to_isolate="x").to_corner(UL)
+        relu2 =  MathTex(r"f({{x}}) &= max({{x}},0)", font_size=65, color=MAROON_C).to_corner(UL)
+        relu3 =  MathTex(r"f({{x}}) &= max(W{{x}} + b,0) \\ W &=  \\ b &=", font_size=65, color=MAROON_C).to_corner(UL)
+
+
+        relu0.set_color_by_tex('x', TEAL_C)
+        relu1.set_color_by_tex('x', TEAL_C)
+        relu2[1].set_color(TEAL_C)
+        relu2[3].set_color(TEAL_C)
+        relu3[1].set_color(TEAL_C)
+        relu3[3].set_color(TEAL_C)
+
+
+
+        W = ValueTracker(1)
+        b = ValueTracker(0)
+
+        W_num = DecimalNumber(font_size=65).set_color(TEAL_C).move_to(relu3, DOWN).shift(UP).shift(LEFT*0.6)  # .to_edge(UL).shift(DOWN*0.8).shift(RIGHT*1.8)
+        b_num = DecimalNumber(font_size=65).set_color(TEAL_C).move_to(relu3, DOWN).shift(LEFT*0.6)  #.to_edge(UL).shift(DOWN*1.6).shift(RIGHT*1.8)
+
+        W_num.add_updater(lambda m: m.set_value(W.get_value()))
+        b_num.add_updater(lambda m: m.set_value(b.get_value()))
+
+
+        graph = ax.plot(lambda x: max(W.get_value() * x + b.get_value(),0), color=TEAL_C)
+        graph.add_updater(lambda func: func.become(ax.plot(lambda x: max(W.get_value() * x + b.get_value(),0), color=TEAL_C)))
+
+
+        self.play(Write(relu0))
+        self.play(AnimationGroup(Transform(relu0,relu1), Create(ax)))
+
+        self.wait()
+        self.play(Transform(relu0,relu2))
+        self.wait()
+        self.play(Transform(relu0,relu3))
+        self.play(AnimationGroup(Create(graph), Write(W_num), Write(b_num)))
+        self.wait()
+        self.play(W.animate.set_value(5), run_time=1)
+        self.play(W.animate.set_value(0), run_time=2)
+        self.play(W.animate.set_value(1), run_time=1)
+        self.play(b.animate.set_value(3), run_time=1)
+        self.play(b.animate.set_value(-3), run_time=2)
+        self.play(b.animate.set_value(0), run_time=2)
+        self.wait()
+
+class model(Scene):
+    def construct(self):
+        ax = Axes(               
+            x_range=[-3,2],
+            y_range=[-10,4],
+            x_length=5,
+            y_length=6,
+            tips=False,
+            axis_config={
+                'color': WHITE,
+            }
+        )
+        ax.to_edge(RIGHT)
+
+        graph = ax.plot(lambda x: - x**3 - 2 * x**2 + 2 * x + 1, x_range=[-4,4], color=WHITE)
+        graph2 = ax.plot(lambda x: -3.85 * max(2.82*x -2.75,0)- 1.52 * max(-1.64 * x + 0.18,0) - 1.04 * max(0.26 * x  - 0.59,0) + 4.34 * max(-2.09 * x - 4.05, 0) +1.09,
+        x_range=[-4,4], color=TEAL_C)
+        graph3 = ax.plot(lambda x: 0.58 * max(-0.1*x -0.33,0) + 3.12 * max(-1.71 * x -2.85,0) + 1.33 * max(-0.61 * x + 1.229,0) - 1.27 * max(-1.15 * x + 0.12, 0)
+         + 0.01 * max(-0.13*x -0.6 ,0) - 1.53 * max(-1.42 * x + 0.24,0) + 3.8 * max(-1.54 * x - 3.65,0) - 3.83 * max(2.7 * x -2.85, 0)   -0.09,
+        x_range=[-4,4], color=TEAL_C)
+
+        Z1 = MathTex(r"Z_1 &= (W_1x + b_1)", font_size=50, color=MAROON_C)
+        Z2 = MathTex(r"Z_2 &= (W_2x + b_2)", font_size=50, color=MAROON_C)
+        Z3 = MathTex(r"Z_3 &= (W_3x + b_3)", font_size=50, color=MAROON_C)
+        Z4 = MathTex(r"Z_4 &= (W_4x + b_4)", font_size=50, color=MAROON_C)
         
+        A1 = MathTex(r"A_1 &= ReLU(Z_1)", font_size=50, color=MAROON_C)
+        A2 = MathTex(r"A_2 &= ReLU(Z_2)", font_size=50, color=MAROON_C)
+        A3 = MathTex(r"A_3 &= ReLU(Z_3)", font_size=50, color=MAROON_C)
+        A4 = MathTex(r"A_4 &= ReLU(Z_4)", font_size=50, color=MAROON_C)
+
+        A1_e = MathTex(r"A_1 &= ReLU(W_1x + b_1)", font_size=50, color=MAROON_C)
+        A2_e = MathTex(r"A_2 &= ReLU(W_2x + b_2)", font_size=50, color=MAROON_C)
+        A3_e = MathTex(r"A_3 &= ReLU(W_3x + b_3)", font_size=50, color=MAROON_C)
+        A4_e = MathTex(r"A_4 &=  ReLU(W_4x + b_4)", font_size=50, color=MAROON_C)
+
+        A1_num = MathTex(r"A_1 &= ReLU(2.82x -2.75)", font_size=50, color=MAROON_C)
+        A2_num = MathTex(r"A_2 &= ReLU(-1.64x + 0.18)", font_size=50, color=MAROON_C)
+        A3_num = MathTex(r"A_3 &= ReLU(0.26x  - 0.59)", font_size=50, color=MAROON_C)
+        A4_num = MathTex(r"A_4 &= ReLU(-2.09x - 4.05)", font_size=50, color=MAROON_C)
+
+        eq = MathTex(r"A &= ReLU(Z) \\ &= ReLU( {{\text{Weights} }} * x + {{\text{biases} }} )", font_size=60, color=MAROON_C).to_edge(LEFT) #, substrings_to_isolate=['Weights','bias'])
+        eq[1].set_color(TEAL_C)
+        eq[3].set_color(TEAL_C)
+
+        Z = VGroup(Z1,Z2,Z3,Z4).arrange(DOWN, center=False, aligned_edge=LEFT).to_edge(UL).shift(DOWN*1.9)
+        A = VGroup(A1,A2,A3,A4).arrange(DOWN, center=False, aligned_edge=LEFT).to_edge(UL).shift(DOWN*1.9)
+        A_e = VGroup(A1_e,A2_e,A3_e,A4_e).arrange(DOWN, center=False, aligned_edge=LEFT).to_edge(UL).shift(DOWN*1.9)
+        A_num = VGroup(A1_num,A2_num,A3_num,A4_num).arrange(DOWN, center=False, aligned_edge=LEFT).to_edge(UL).shift(DOWN*1.9)
+        A_sum =  MathTex(r"A = A_1 + A_2 + A_3 + A_4 + b", font_size=60, color=TEAL_C).to_edge(LEFT)
+        A_extra = MathTex(r"A &= A_1 + A_2 + A_3 + A_4 \\&+ A_5 + A_6 + A_7 + A_8 + b", font_size=60, color=TEAL_C).to_edge(LEFT)
+
         
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        self.play(Create(ax))
+        self.wait()
+        self.play(Create(graph, run_time=1))
+        self.play(Write(Z, run_Time=5))
+        self.play(TransformMatchingShapes(Z,A))
+        self.wait()
+        self.play(TransformMatchingShapes(A,A_e))
+        self.wait()
+        self.play(TransformMatchingShapes(A_e,A_num))
+        self.wait()
+        self.play(TransformMatchingShapes(A_num,A_sum))
+        self.wait()
+        self.play(Create(graph2, run_time=5))
+        self.wait()
+        self.play(TransformMatchingShapes(A_sum,A_extra))
+        self.play(Transform(graph2,graph3))
+        self.wait()
+        self.play(Transform(A_extra,eq))
+        self.wait()

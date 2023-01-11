@@ -5,7 +5,7 @@ This repo contains the python code of [manim](https://github.com/3b1b/manim) tha
 
 ## Animation Demo
 
-![demo](extra\Activation.gif)
+![demo](extra/Activation.gif)
 
 This repo contains only the animation code, for the rest of the useful codes that was presented in the youtube channel head to [Data Science Diary Docs](https://github.com/MightyStud/Data-Science-Diary-Docs) repo.
 

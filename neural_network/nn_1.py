@@ -2,11 +2,11 @@ from manim import *
 import math 
 
 #changes according to scene before running in terminal 
-config.background_color = "#1E1E1E"
+config.background_color = WHITE #BLACK #"#1E1E1E"
 
 class nneq(Scene):
     def construct(self):
-        eq = MathTex(r"WX + b", font_size=350)
+        eq = MathTex(r"Wx + b", font_size=350)
         eq.set_color(BLACK)
         self.play(Write(eq, run_time=3.5))
 

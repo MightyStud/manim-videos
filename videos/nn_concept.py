@@ -2,14 +2,20 @@ from manim import *
 import math 
 
 #changes according to scene before running in terminal 
-config.background_color = BLACK #BLACK #"#1E1E1E" #WHITE
+
+config.background_color = WHITE #BLACK #"#1E1E1E" #WHITE
+#config.background_color = BLACK #BLACK #"#1E1E1E" #WHITE
+#config.background_color = "#1E1E1E" #BLACK #"#1E1E1E" #WHITE
 
 class nneq(Scene):
     def construct(self):
-        eq = MathTex(r"Wx + b", font_size=350)
-        eq.set_color(BLACK)
-        self.play(Write(eq, run_time=3.5))
+        eq = MathTex(r"f(x) = wx + b", font_size=200, color=BLACK)
+        eq1 = MathTex(r"f(x) = w_{j,k} x_{k, i} + b_j", font_size=150, color=BLACK)
 
+        self.play(Write(eq, run_time=3.5))
+        self.wait()
+        self.play(TransformMatchingShapes(eq,eq1))
+        self.wait()
 
 class Function(Scene):
     def construct(self):
@@ -338,6 +344,7 @@ class model(Scene):
 
 class Math(Scene):
     def construct(self):
+        
         za = MathTex(r"z_{j, i}^{[l]} &= \sum_k w_{j, k}^{[l]} a_{k, i}^{[l - 1]} + b_j^{[l]}, \\a_{j, i}^{[l]} &= g_j^{[l]}(z_{1, i}^{[l]}, \dots, z_{j, i}^{[l]}, \dots, z_{n^{[l]}, i}^{[l]}).")
         vec = MathTex(r"""
         \begin{bmatrix}
@@ -408,4 +415,3 @@ class Math(Scene):
         self.play(Write(zd), run_time=3)
         self.wait()
 
- 

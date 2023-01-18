@@ -25,7 +25,7 @@ Some of the code is based on the [community version of manim](https://github.com
     from manim import *
     ```
 
-## To run manim code run from terminal
+## To run manim code, run from terminal
 
 ```bash
     manim [OPTIONS] FILE [SCENES]

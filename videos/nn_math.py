@@ -1,5 +1,6 @@
 from manim import *
 import itertools as it
+import numpy as np
 
 
 # background color
@@ -122,51 +123,295 @@ class Network(Scene):
 
 class Forward(Scene):
     def construct(self):
+            # NN0 shallow 1 neuron
+            network0 = NeuralNetworkMobject([1,1,1]).move_to(RIGHT*2.5)
+            network0.label_inputs('x')
+            network0.label_outputs('y')
+            network0.label_hidden_layers('z')
+            network0.scale(3)
             
-            input_C0 = Circle(radius=0.1, color=BLUE_C, stroke_color=BLACK, fill_opacity=1, stroke_width=2)
-            hidden_C0 = Circle(radius=0.1, color=WHITE, stroke_color=BLACK, fill_opacity=1, stroke_width=2)
-            output_C0 = Circle(radius=0.1, color=RED_C, stroke_color=BLACK, fill_opacity=1, stroke_width=2)
-            network0 = VGroup(input_C0, hidden_C0, output_C0).arrange(buff=5).move_to(UP * 2.5)
+            equation0 = MathTex(r"z_{1} &= wx_{1} + b  \\ a_{1} &= g(z_{1})", font_size=50).to_edge(LEFT)
+            equation0[0][4:6].set_fill(color=BLUE_C)
 
-            arrow_C0_1 = Arrow(start=input_C0, end=hidden_C0, max_tip_length_to_length_ratio=0.03, stroke_width=3)
-            arrow_C0_2 = Arrow(start=hidden_C0, end=output_C0, max_tip_length_to_length_ratio=0.03, stroke_width=3)
-            arrow0 = VGroup(arrow_C0_1, arrow_C0_2)
-
-            self.play(AnimationGroup(Write(network0),Create(arrow0) ))
+            self.play(Write(network0))
+            self.wait()
+            self.play(AnimationGroup(Flash(network0[0][1], flash_radius=MED_LARGE_BUFF ,rate_func = rush_from, line_length=0.4, run_time=1.5), Write(equation0)))
             self.wait()
 
-            equation0 = MathTex(r"z &= wx + b  \\ a &= g(z)", font_size=50).to_edge(LEFT)
-            equation0[0][3].set_fill(color=BLUE_C)
-            equation0[0][6].set_fill(color=RED_C)
+            # NN1 shallow 3 neurons 
+            network1 = NeuralNetworkMobject([1,3,1]).move_to(RIGHT*2.5)
+            network1.label_inputs('x')
+            network1.label_outputs('y')
+            network1.label_hidden_layers('z')
 
-            self.play(Write(equation0))
+            network1.scale(3)
+
+            equation1 = MathTex(r"z_{1} &= w_{1}x_{1} + b_{1}  \\ z_{2} &= w_{2}x_{1} + b_{2} \\ z_{3} &= w_{3}x_{1} + b_{3} \\ a_{1} &= g(z_{1}) \\ a_{2} &= g(z_{2}) \\ a_{3} &= g(z_{3})", font_size=50).to_edge(LEFT)
+            equation1[0][5:7].set_fill(color=BLUE_C)
+            equation1[0][15:17].set_fill(color=BLUE_C)
+            equation1[0][25:27].set_fill(color=BLUE_C)
+
+            self.play(Transform(network0,network1))
+            self.wait()
+            self.play(AnimationGroup(Flash(network1[0][1][0][0], flash_radius=MED_LARGE_BUFF ,rate_func = rush_from, line_length=0.3, run_time=1.5),
+                                     Flash(network1[0][1][0][1], flash_radius=MED_LARGE_BUFF ,rate_func = rush_from, line_length=0.3, run_time=1.5),
+                                     Flash(network1[0][1][0][2], flash_radius=MED_LARGE_BUFF ,rate_func = rush_from, line_length=0.3, run_time=1.5),
+                                    TransformMatchingShapes(equation0,equation1, run_time=1)))
             self.wait()
 
-            hidden_C1 = Circle(radius=0.1, color=WHITE, stroke_color=BLACK, fill_opacity=1, stroke_width=2)
-            hidden_C2 = Circle(radius=0.1, color=WHITE, stroke_color=BLACK, fill_opacity=1, stroke_width=2)
+            # NN2 deep 2l hidden 1 input 1 output
+            network2 = NeuralNetworkMobject([1,3,2,1]).move_to(RIGHT*4)
+            network2.label_inputs('x')
+            network2.label_outputs('y')
+            network2.label_hidden_layers('z')
+            network2.scale(2)
 
-            network1 = VGroup(hidden_C0, hidden_C1, hidden_C2).arrange(buff=5).move_to(UP * 2.5)
-            arrow1 = ARROWS([1,3,1])
+            equation2 = MathTex(r"""z_{1}^{[2]} &= w_{1,1}^{[2]}a_{1}^{[1]} + w_{1,2}^{[2]}a_{2}^{[1]} + w_{1,3}^{[2]}a_{3}^{[1]} + b_{1}^{[2]}  \\ 
+                                z_{2}^{[2]} &= w_{2,1}^{[2]}a_{1}^{[1]} + w_{2,2}^{[2]}a_{2}^{[1]} + w_{2,3}^{[2]}a_{3}^{[1]} + b_{2}^{[2]}  \\
+                                a_{1}^{[2]} &= g(Z_{1}^{[2]}) \\ 
+                                a_{2}^{[2]} &= g(Z_{2}^{[2]})""", font_size=40).to_edge(LEFT)
 
-            self.play(AnimationGroup(FadeOut(arrow0), Write(arrow1)))
+            layer0 = Tex(r"Input \\ $[l=0]$", font_size=25)
+            layer1 = Tex(r"$[l=1]$", font_size=25)
+            layer2 = Tex(r"$[l=2]$", font_size=25)
+            layer3 = Tex(r"Output \\ $[l=3]$", font_size=25)
+            layers = VGroup(layer0,layer1,layer2,layer3).arrange(buff=1).move_to(network2).shift(DOWN*2)
+
+            self.play(Transform(network0,network2, run_time=2))
+            self.wait()
+            self.play(AnimationGroup(Flash(network2[0][2][0][0], flash_radius=MED_SMALL_BUFF ,rate_func = rush_from, line_length=0.25, run_time=1.5),
+                                    Flash(network2[0][2][0][1], flash_radius=MED_SMALL_BUFF ,rate_func = rush_from, line_length=0.25, run_time=1.5),
+                                    TransformMatchingShapes(equation1,equation2, run_time=2)))
+            self.wait()
+            self.play(Write(layers))
+            self.play(Circumscribe(network2[0][1], run_time=2))
+            self.wait()
+
+class notations(Scene):
+    def construct(self):
+        equation0 = MathTex(r"""z_{j, i}^{[l]} &= \sum_k w_{j, k}^{[l]} a_{k, i}^{[l - 1]} + b_j^{[l]}, \\
+            a_{j, i}^{[l]} &= g_j^{[l]}(z_{1, i}^{[l]}, \dots, z_{j, i}^{[l]}, \dots, z_{n^{[l]}, i}^{[l]}).""",
+            font_size = 80, color=WHITE)
+        
+        for i in [2,12,19,29,35,43,49,61,73,77]:
+            equation0[0][i].set_color(MAROON)
+        for i in [4,14,31,37,45,63]:
+            equation0[0][i].set_color(TEAL)
+        for i in [6,25,39,53,65,80]:
+            equation0[0][i].set_color(PURPLE)
+        for i in [9,16,23]:
+            equation0[0][i].set_color(YELLOW)
+        for i in [75]:
+            equation0[0][i].set_color(GOLD)                    
+
+        self.play(Write(equation0))
+        self.wait()
+        self.play(ScaleInPlace(equation0, 0.5))
+        self.play(equation0.animate.shift(UP*2.6))
+        # self.play(AnimationGroup(ScaleInPlace(equation0, 0.35), equation0.animate.shift(LEFT*5)))
+        self.wait()
+
+        notation0 = Tex(r"$l = 1, \dots, L$ current layer. $l=0$ and $l=L$ are the input and output.", )
+        notation1 = Tex(r"$n$ number of nodes in current layer.", )
+        notation2 = Tex(r"$j = 1, \dots, n^{[l]}$ the $j$th node of current layer.", )
+        notation3 = Tex(r"$k = 1, \dots, n^{[l-1]}$ the $k$th node of previous layer.", )
+        notation4 = Tex(r"$i = 1, \dots, m$ current training example, where $m$ is number of training examples.", )
+        notation5 = Tex(r"$g_j^{[l]}$ the activation function of current layer." )
+
+        entity0 = MathTex(r"l", color=MAROON)
+        entity1 = MathTex(r"n", color=GOLD)
+        entity2 = MathTex(r"j", color=TEAL)
+        entity3 = MathTex(r"k", color=YELLOW)
+        entity4 = MathTex(r"i", color=PURPLE)
+        entity5 = MathTex(r"g",)
+
+        label0 = Tex('Entity')
+        label1 = Tex('Description')
+
+        table = MobjectTable([[entity0,notation0],
+                        [entity1,notation1],
+                         [entity2,notation2],
+                          [entity3,notation3],
+                           [entity4,notation4],
+                            [entity5,notation5]], include_outer_lines=True, col_labels=[label0, label1],  line_config={"stroke_width": 1}).scale(0.53).move_to(DOWN*1.1)
+        
+        self.play(table.create())
+        self.wait()
+
+class cost_for(Scene):
+    def construct(self):
+        eq0 = MathTex(r"a^{[L]} =\hat{y}")
+        eq1 = MathTex(r"J = f(\hat{y}, y)")
+        eq = VGroup(eq0,eq1).arrange(DOWN).scale(3)
+
+        self.play(Write(eq))
+        self.wait()
+
+class costs(Scene):
+    def construct(self):
+
+        title = Title("Cross-entropy Loss")
+        # Binary Classification
+        rect1 = Rectangle(height=3*1.05, width=4*1.05, color=WHITE, fill_opacity=0, stroke_width=0.5).to_edge(LEFT)
+        eq1 = MathTex(r"""
+        J &= f({\hat{y}}, {y}) = f({a}^{[L]}, {y}) \\
+        &= -\frac{1}{m} \sum_i (y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i)) \\
+        &= -\frac{1}{m} \sum_i (y_i \log(a_i^{[L]}) + (1 - y_i) \log(1 - a_i^{[L]})).
+        """, font_size=15).move_to(rect1)
+        label1 = Tex(r"Binary Classification", color=WHITE,  font_size=32).move_to(rect1, DOWN).shift(DOWN)
+
+        # Multiclass Classification
+        rect2 = Rectangle(height=3*1.05, width=4*1.05, color=WHITE, fill_opacity=0, stroke_width=0.5)
+        eq2 = MathTex(r"""
+        J &= f({\hat{y}}, {y}) = f({a}^{[L]}, {y}) \\
+        &= -\frac{1}{m} \sum_i \sum_j y_{j, i} \log(\hat{y}_{j, i}) \\
+        &= -\frac{1}{m} \sum_i \sum_j y_{j, i} \log(a_{j, i}^{[L]}).
+        """, font_size=20).move_to(rect2)
+        label2 = Tex(r"Multiclass Classification", color=WHITE,  font_size=32).move_to(rect2, DOWN).shift(DOWN)
+
+        # Multi-Label Classification
+        rect3 = Rectangle(height=3*1.05, width=4*1.05, color=WHITE, fill_opacity=0, stroke_width=0.5).to_edge(RIGHT)
+        eq3 = MathTex(r"""
+        J &= f({\hat{y}}, {y}) = f({a}^{[L]}, {y}) \\
+        &= \sum_j \Bigl(-\frac{1}{m} \sum_i (y_{j, i} \log(\hat{y}_{j, i}) + (1 - y_{j, i}) \log(1 - \hat{y}_{j, i}))\Bigr) \\
+        &= \sum_j \Bigl(-\frac{1}{m} \sum_i (y_{j, i} \log(a_{j, i}^{[L]}) + (1 - y_{j, i}) \log(1 - a_{j, i}^{[L]}))\Bigr),
+        """, font_size=15).move_to(rect3)       
+        label3 = Tex(r"Multi-Label Classification", color=WHITE,  font_size=32).move_to(rect3, DOWN).shift(DOWN)
+
+        self.play(Write(title))
+        self.play(AnimationGroup(Create(rect1),Create(rect2),Create(rect3)))
+        self.play(AnimationGroup(Write(label1),Write(label2),Write(label3)))
+        self.play(AnimationGroup(Write(eq1), Write(eq2), Write(eq3)))
+        self.wait()
 
 
+class grad_dec(Scene):
+    def construct(self):
+        
+        # Minimum of a Function
+        title0 = Title("Minimum of a Function")
+        ax0 = Axes(x_range=[-4,2], y_range=[-1,8], tips=False, stroke_width=1, axis_config={'color': WHITE}).scale(0.7).shift(DOWN*0.8).shift(RIGHT*2.5)
+        graph0 = ax0.plot(lambda x: x**4 +3*x**3 + 0.1*x**2 - 2.3*x+ 4, color=BLUE, x_range=[-2.855,1.162])
+        graph0_d = ax0.plot(lambda x: 4*x**3+9*x**2+0.2*x-2.3)
+        x_label = ax0.get_x_axis_label("x")
+
+        
+    
+
+        eq0 = MathTex(r"f'(x) &= 0 \quad \text{solve for } x \\ x_{1} &= 0.452, \\ x_{2} &= -2.095", font_size=40).to_corner(LEFT)
+        eq0[0][16:18].set_color(RED)
+        eq0[0][25:27].set_color(RED)
+        dot0 = Dot(color=RED).move_to(ax0.c2p(-2.095, 0.936,0))
+        dot1 = Dot(color=RED).move_to(ax0.c2p(0.452, 3.3,0))
+
+        self.play(LaggedStart(DrawBorderThenFill(ax0),Create(graph0),Write(title0), Write(x_label), run_time=3, lag_ratio=0.5))
+        self.play(Write(eq0, run_time=3))
+        self.play(Write(VGroup(dot0, dot1)))
+
+        # Gradient decent
+
+        title1 = Title("Gradient Descent")
+        eq1 = MathTex(r"J &= f(\hat{y}, y), \quad a^{[L]} = \hat{y} \\ a^{[L]} &= g(z^{[L]}), \quad z = h(w^{[L]},b^{[L]},a^{[L-1]}) \\  a^{[L-1]} &= g(z^{[L-1]}), \quad z = h(w^{[L-1]},b^{[L-1]},a^{[L-2]}) \\ a^{[L-2]} &= \dots", font_size=28).to_corner(LEFT)
+        eq2_0 = Tex(r"$J(x)$",font_size=50)
+        eq2_1 = Tex(r"$J_{\text{new}} = J_{\text{old}} - J_{\text{old}}' * \alpha$",font_size=50)
+        eq2 = VGroup(eq2_0,eq2_1).arrange(DOWN, center=False, aligned_edge=LEFT).to_edge(LEFT)
+        value = ValueTracker(1)
+        
+        moving_slope = always_redraw(
+            lambda: ax0.get_secant_slope_group(
+                x=value.get_value(),
+                graph=graph0,
+                dx=0.005,
+                dx_line_color=YELLOW,
+                secant_line_length=4,
+                secant_line_color=YELLOW,
+                include_secant_line=True,             
+            )[2].set_stroke(width=3)
+        )
+
+        dot2 = always_redraw(
+            lambda: Dot(color=RED).move_to(
+            ax0.c2p(value.get_value(), graph0.underlying_function(value.get_value()))))
+        
+        v_line = always_redraw(
+            lambda:
+            ax0.get_vertical_line(ax0.c2p(
+            value.get_value(), graph0.underlying_function(value.get_value())), line_config={"dashed_ratio": 0.70}))
+        
+        arrow = always_redraw(
+            lambda: Arrow(buff=0, 
+                        start=v_line.get_center(),
+                        end=(v_line.get_center() + (graph0_d.underlying_function(value.get_value()) * -0.1, 0, 0)),
+                        max_tip_length_to_length_ratio=0.1,
+                        max_stroke_width_to_length_ratio=2)
+        )
+        
+        slope_value_text = (
+            Tex(r"$J'$/Slope: ", font_size=40)
+            .next_to(ax0, DOWN, buff=0.1)
+            .set_color(YELLOW)
+            .add_background_rectangle()
+        )
+
+        slope_value = always_redraw(
+            lambda: DecimalNumber(num_decimal_places=1, font_size=40)
+            .set_value(graph0_d.underlying_function(value.get_value()))
+            .next_to(slope_value_text, RIGHT, buff=0.1)
+            .set_color(YELLOW)
+        )
+
+        self.play(Transform(title0,title1))
+        self.play(FadeOut(eq0,dot0,dot1))
+        self.play(Write(eq1))
+        self.wait()
+        self.play(FadeOut(eq1))
+        self.play(Write(eq2))
+        self.play(Write(VGroup(dot2, moving_slope,slope_value_text, slope_value, v_line, arrow)))
+        self.play(value.animate.set_value(0.452), run_time=5, rate_functions=rate_functions.ease_out_sine)
+        #self.play(FadeOut(dot2,moving_slope,slope_value))
+        value.set_value(-2.8)
+        #self.play(FadeIn(dot2,moving_slope,slope_value))
+        self.play(value.animate.set_value(-2.095), run_time=5, rate_functions=rate_functions.ease_out_sine)
+        self.wait()
+
+
+
+        
+
+class back(Scene):
+    def construct(self):
+        title = MathTex(r"J =  f(a^{[L]}, y), \quad a^{[l]} = g(z^{[l]}),  \quad z^{[l]} = w^{[l]} * a^{[l-1]}+b^{[l]}").to_edge(UP)
+
+        self.add(title) 
+
+
+        
+
+
+
+
+
+
+            
+
+    
 class test(Scene):
     def construct(self):
-        mynetwork = NeuralNetworkMobject([1,3,1])
+        mynetwork = NeuralNetworkMobject([1,3,5,2,1])
         mynetwork.label_inputs('x')
         mynetwork.label_outputs('y')
+        mynetwork.label_hidden_layers('z')
         mynetwork.label_outputs_text(['Number'])
-        MathTex
+        mynetwork.scale(3)
         self.play(Write(mynetwork))
         self.wait
 
-# A customizable Sequential Neural Network, copied from https://www.youtube.com/watch?v=HnIeAP--vWc
+# A customizable Sequential Neural Network, copied from https://www.youtube.com/watch?v=HnIeAP--vWc and adjusted for manim community version
 class NeuralNetworkMobject(VGroup):
     CONFIG = {
         "neuron_radius": 0.15,
         "neuron_to_neuron_buff": MED_SMALL_BUFF,
-        "layer_to_layer_buff": LARGE_BUFF,
+        "layer_to_layer_buff": MED_LARGE_BUFF,
 
         "output_neuron_color": RED_C,
         "input_neuron_color": BLUE_C,
@@ -182,8 +427,8 @@ class NeuralNetworkMobject(VGroup):
         "brace_for_large_layers": True,
         "average_shown_activation_of_large_layer": True,
         "include_output_labels": False,
-        "arrow": False,
-        "arrow_tip_size": 0.1,
+        "arrow": True,
+        "arrow_tip_size": 0.08,
         "left_size": 1,
         "neuron_fill_opacity": 1
     }
@@ -238,7 +483,7 @@ class NeuralNetworkMobject(VGroup):
         layer.add(neurons)
 
         if size > n_neurons:
-            dots = MathTex("\\vdots")
+            dots = MathTex(r"\\vdots")
             dots.move_to(neurons)
             VGroup(*neurons[:len(neurons) // 2]).next_to(
                 dots, UP, MED_SMALL_BUFF

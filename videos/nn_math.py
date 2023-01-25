@@ -7,19 +7,6 @@ import numpy as np
 config.background_color = "#1E1E1E"
 config.tex_template.add_to_preamble(r"\usepackage{physics}") # to enables physics extra latex package, can use \pdv for partial derivative 
 
-def ARROWS(layers):
-    layer_neurons = {}
-    for i, _ in enumerate(layers):
-        layer_neurons[i] = VGroup()
-
-    for i, layer in enumerate(layers):
-        for x in range(0,layer):
-            for y in range(0,layers[i+1]):
-                arrow = Arrow(start=x, end=y, max_tip_length_to_length_ratio=0.03, stroke_width=3)
-                layer_neurons[i].add(arrow)
-    return layer_neurons.values
-
-
 
 class Intro(Scene): # SCRAPPED 
     def construct(self):
@@ -30,7 +17,7 @@ class Intro(Scene): # SCRAPPED
 
         self.add(X,Y,arrow)
 
-class Network(Scene):
+class network(Scene):
     def construct(self):
         
         input_C0 = Circle(radius=0.2, color=BLUE_C, stroke_color=BLACK, fill_opacity=1)
@@ -57,9 +44,9 @@ class Network(Scene):
         hidden = Tex("Hidden layer", "Hidden layers" )
         output = Tex("Output layer", "Outputs layer", color=RED_C)
 
-
-
         text = VGroup(input[0], hidden[0], output[0]).arrange(buff=2).to_edge(DOWN)
+        text2 = VGroup(input[1], hidden[1], output[1]).arrange(buff=2).to_edge(DOWN)
+        
 
         X = MathTex("X", font_size=300, color=BLUE_C).shift(LEFT*4)
         Y = MathTex("Y", font_size=300, color=RED_C).shift(RIGHT*4)
@@ -114,10 +101,10 @@ class Network(Scene):
         self.play(Write(text))
         self.wait()
         self.play(FadeOut(arrow_main,arrow2,hidden_C0))
-        self.play(AnimationGroup(Write(hidden_l1), Write(hidden_l2), Write(inputs_l1), Write(l1_l2), Write(l2_outputs), TransformMatchingShapes(hidden[0], hidden[1], run_time=1)))
+        self.play(AnimationGroup(Write(hidden_l1), Write(hidden_l2), Write(inputs_l1), Write(l1_l2), Write(l2_outputs), TransformMatchingShapes(text[1], text2[1], run_time=1)))
         self.wait()
         self.play(Transform(X, inputs),Transform(Y, outputs), Transform(inputs_l1, inputs_l1_v2),
-                 Transform(l2_outputs, l2_outputs_v2),TransformMatchingShapes(input[0],input[1]), TransformMatchingShapes(output[0],output[1]))
+                 Transform(l2_outputs, l2_outputs_v2),TransformMatchingShapes(text[0],text2[0]), TransformMatchingShapes(text[2],text2[2]))
         self.wait()
 
 
@@ -369,33 +356,130 @@ class grad_dec(Scene):
         self.play(Write(VGroup(dot2, moving_slope,slope_value_text, slope_value, v_line, arrow)))
         self.play(value.animate.set_value(0.452), run_time=5, rate_functions=rate_functions.ease_out_sine)
         #self.play(FadeOut(dot2,moving_slope,slope_value))
+        self.wait()
         value.set_value(-2.8)
         #self.play(FadeIn(dot2,moving_slope,slope_value))
         self.play(value.animate.set_value(-2.095), run_time=5, rate_functions=rate_functions.ease_out_sine)
+
+
+
+class back(Scene):
+    def construct(self):
+        title = Title(r"$J =  f(a^{[L]}, y), \quad a^{[l]} = g(z^{[l]}),  \quad z^{[l]} = w^{[l]} * a^{[l-1]}+b^{[l]}$").to_edge(UP)
+
+        eq0 = MathTex(r"""\pdv{J}{w_{j, k}^{[l]}} &= \sum_i \pdv{J}{z_{j, i}^{[l]}} \pdv{z_{j, i}^{[l]}}{w_{j, k}^{[l]}} \\ 
+                      \pdv{J}{w_{j, k}^{[l]}} &= \sum_i \pdv{J}{z_{j, i}^{[l]}} \pdv{}{w_{j, k}^{[l]}} \left( w_{j, k}^{[l]} a_{k, i}^{[l - 1]} + b_j^{[l]} \right) \\
+                      \pdv{J}{w_{j, k}^{[l]}} &= \sum_i \pdv{J}{z_{j, i}^{[l]}} a_{k, i}^{[l - 1]}
+                      """, font_size= 33).to_corner(LEFT).shift(DOWN)
+        
+        eq1 = MathTex(r"""\pdv{J}{b_{j, k}^{[l]}} &= \sum_i \pdv{J}{z_{j, i}^{[l]}} \pdv{z_{j, i}^{[l]}}{b_{j, k}^{[l]}} \\ 
+                      \pdv{J}{b_{j, k}^{[l]}} &= \sum_i \pdv{J}{z_{j, i}^{[l]}} \pdv{}{w_{j, k}^{[l]}} \left( w_{j, k}^{[l]} a_{k, i}^{[l - 1]} + b_j^{[l]} \right) \\
+                      \pdv{J}{b_{j, k}^{[l]}} &= \sum_i \pdv{J}{z_{j, i}^{[l]}}""", font_size= 33).to_corner(RIGHT).shift(DOWN)
+
+
+        self.play(Write(title)) 
+        self.play((Write(eq0, run_time =5)))
+        self.wait()
+        self.play((Write(eq1, run_time =5)))
+        self.wait()
+
+        eq0_1 = MathTex(r"\pdv{J}{w_{j, k}^{[l]}} &= \sum_i \pdv{J}{z_{j, i}^{[l]}} a_{k, i}^{[l - 1]}", font_size= 50).to_corner(LEFT).shift(UP)
+        eq1_1 = MathTex(r"\pdv{J}{b_{j, k}^{[l]}} &= \sum_i \pdv{J}{z_{j, i}^{[l]}}", font_size= 50).to_corner(RIGHT).shift(UP)
+        eq3 = MathTex(r"\pdv{J}{a_{k, i}^{[l - 1]}} = \sum_j \pdv{J}{z_{j, i}^{[l]}} w_{j, k}^{[l]}", font_size=50).shift(DOWN*2)
+
+
+        self.play(Transform(eq0,eq0_1))
+        self.play(Transform(eq1,eq1_1))
+        self.play(FadeIn(eq3))
+        self.wait()
+        self.play(eq0_1[0][14:25].animate.set_color(YELLOW),eq1_1[0][14:].animate.set_color(YELLOW), eq3[0][16:27].animate.set_color(YELLOW))
+        self.wait()
+        #self.add(index_labels(eq0_1[0]), index_labels(eq1_1[0]))
+        
+
+
+
+
+        eq2 = MathTex(r"\pdv{J}{z_{j, i}^{[l]}} = \sum_j \pdv{J}{a_{j, i}^{[l]}} \pdv{a_{j, i}^{[l]}}{z_{j, i}^{[l]}}", font_size = 80)
+        eq2[0][0:11].set_color(YELLOW)
+
+        self.play(TransformMatchingShapes(VGroup(eq0, eq1, eq0_1, eq1_1,eq3),eq2))
+        self.wait()
+        self.play(eq2.animate.set_color(WHITE))
+        self.play(Indicate(eq2[0][14:25]))
+        self.wait()
+        self.play(Indicate(eq2[0][25:]))
+        #elf.add(index_labels(eq2[0]))
+        self.wait()
+
+class summary(Scene):
+    def construct(self):
+
+        input_C0 = Circle(radius=0.2, color=BLUE_C, stroke_color=BLACK, fill_opacity=1, stroke_width=0.1)
+        hidden_C0 = Circle(radius=0.2, color=WHITE, stroke_color=BLACK, fill_opacity=1)
+        output_C0 = Circle(radius=0.2, color=RED_C, stroke_color=BLACK, fill_opacity=1)
+        nn = VGroup(input_C0, hidden_C0, output_C0).arrange(buff=5).to_edge(UP)
+
+        arrow1 = Arrow(start=input_C0, end=hidden_C0, max_tip_length_to_length_ratio=0.05)
+        arrow2 = Arrow(start=hidden_C0, end=output_C0, max_tip_length_to_length_ratio=0.05)
+        arrows = VGroup(arrow1, arrow2)
+
+        self.play(Write(nn), Create(arrows), run_time=2)
+        self.wait()
+
+        f1 = Arrow(start=input_C0, end=output_C0, max_tip_length_to_length_ratio=0.02, max_stroke_width_to_length_ratio=0.3).shift(DOWN*1.5).shift((0,0.5,0))
+        f1_label = Tex(r"Forward Propagation", font_size=40).next_to(hidden_C0, DOWN*3).shift((0,0.5,0))
+        i1 = MathTex(r"x", color=BLUE, font_size=80).next_to(input_C0, DOWN*6).shift((0,0.5,0))
+        h1 = MathTex(r"z^{[1]} &= w^{[1]}x^{[0]}+b^{[1]} \\ a^{[1]} &= g(z^{[1]})", font_size=25).next_to(hidden_C0, DOWN*6).shift((0,0.5,0))
+        o1 = MathTex(r"z^{[2]} &= w^{[2]}a^{[1]}+b^{[2]} \\ a^{[2]} &= g(z^{[2]}) \\ \text{loss} &= J(a^{[2]},y)", font_size=20).next_to(output_C0, DOWN*6).shift((0,0.5,0))
+        o1[0][-2].set_color(RED)
+        h1[0][9].set_color(BLUE)
+
+        self.play(Create(f1), Write(f1_label))
+        self.wait()
+        self.play(Write(i1))
+        self.play(Write(h1))
+        self.play(Write(o1))
+        self.wait()
+
+        f2 = Arrow(start=output_C0, end=input_C0, max_tip_length_to_length_ratio=0.02, max_stroke_width_to_length_ratio=0.3).shift(DOWN*1.5 - (0,2,0)).shift((0,0.5,0))
+        f2_label = Tex(r"Backward Propagation", font_size=40).next_to(hidden_C0, DOWN).shift(DOWN - (0,1.5,0)).shift((0,0.5,0))
+        i2 = MathTex(r"x", color=BLUE, font_size=80).next_to(input_C0, DOWN).shift(DOWN*1.5 - (0,2,0)).shift((0,0.7,0))
+        h2 = MathTex(r""" \pdv{a^{[1]}}{z^{[1]}} &= g'(z^{[1]}) \\ 
+            \pdv{J}{z^{[1]}} &= \pdv{J}{a^{[1]}} \pdv{a^{[1]}}{z^{[1]}} \\
+            \pdv{J}{w^{[1]}} &= \pdv{J}{z^{[1]}} x^{[0]} \\
+            \pdv{J}{b^{[1]}} &= \pdv{J}{z^{[1]}}
+            """, font_size=22).next_to(hidden_C0, DOWN).shift(DOWN*1.5 - (0,2,0)).shift((0,0.7,0))
+        o2 = MathTex(r"""\pdv{J}{a^{[2]}} &= J'(a^{[2]},y), \hspace{0.3cm}  \pdv{a^{[2]}}{z^{[2]}} = g'(z^{[2]}) \\
+            \pdv{J}{z^{[2]}} &= \pdv{J}{a^{[2]}} \pdv{a^{[2]}}{z^{[2]}} \\
+            \pdv{J}{w^{[2]}} &= \pdv{J}{z^{[2]}} a^{[1]} \\ 
+            \pdv{J}{b^{[2]}} &= \pdv{J}{z^{[2]}} \\
+            \pdv{J}{a^{[1]}} &= \pdv{J}{z^{[2]}} w^{[2]}
+            """, font_size=20).next_to(output_C0, DOWN).shift(DOWN*1.5 - (0,2,0)).shift((0,0.7,0))
+  
+        h2[0][65].set_color(BLUE)
+        o2[0][17].set_color(RED)
+
+        update = Tex(r"Gradient Descent: parameter$_{\text{new}}$ = parameter$_{\text{old}}$ - $\nabla$ parameters$_{\text{old}} * \alpha $", font_size=30).to_edge(DOWN)
+        self.play(Create(f2), Write(f2_label, reverse=True))
+        self.add(f2_label)
+        self.wait()
+        self.play(Write(o2, run_time=4))
+        self.play(Write(h2, run_time=3))
+        self.play(Write(i2))
+        self.wait()
+        self.play(Write(update))
+        #self.add(index_labels(h1[0]), index_labels(h2[0]))
         self.wait()
 
 
 
-        
-
-class back(Scene):
-    def construct(self):
-        title = MathTex(r"J =  f(a^{[L]}, y), \quad a^{[l]} = g(z^{[l]}),  \quad z^{[l]} = w^{[l]} * a^{[l-1]}+b^{[l]}").to_edge(UP)
-
-        self.add(title) 
-
 
         
 
-
-
-
-
-
-            
 
     
-class test(Scene):
+class test(Scene): #Scrapped 
     def construct(self):
         mynetwork = NeuralNetworkMobject([1,3,5,2,1])
         mynetwork.label_inputs('x')

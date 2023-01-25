@@ -458,7 +458,7 @@ class summary(Scene):
         h2[0][65].set_color(BLUE)
         o2[0][17].set_color(RED)
 
-        update = Tex(r"Gradient Descent: parameter$_{\text{new}}$ = parameter$_{\text{old}}$ - $\nabla$ parameters$_{\text{old}} * \alpha $", font_size=30).to_edge(DOWN)
+        update = Tex(r"Gradient Descent: parameter$_{\text{new}}$ = parameter$_{\text{old}}$ - $\nabla$ parameter$_{\text{old}} * \alpha $", font_size=30).to_edge(DOWN)
         self.play(Create(f2), Write(f2_label, reverse=True))
         self.add(f2_label)
         self.wait()

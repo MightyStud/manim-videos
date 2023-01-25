@@ -108,7 +108,7 @@ class network(Scene):
         self.wait()
 
 
-class Forward(Scene):
+class forward(Scene):
     def construct(self):
             # NN0 shallow 1 neuron
             network0 = NeuralNetworkMobject([1,1,1]).move_to(RIGHT*2.5)
@@ -272,7 +272,7 @@ class costs(Scene):
         self.wait()
 
 
-class grad_dec(Scene):
+class grad_des(Scene):
     def construct(self):
         
         # Minimum of a Function
@@ -361,8 +361,6 @@ class grad_dec(Scene):
         #self.play(FadeIn(dot2,moving_slope,slope_value))
         self.play(value.animate.set_value(-2.095), run_time=5, rate_functions=rate_functions.ease_out_sine)
 
-
-
 class back(Scene):
     def construct(self):
         title = Title(r"$J =  f(a^{[L]}, y), \quad a^{[l]} = g(z^{[l]}),  \quad z^{[l]} = w^{[l]} * a^{[l-1]}+b^{[l]}$").to_edge(UP)
@@ -415,7 +413,7 @@ class back(Scene):
 class summary(Scene):
     def construct(self):
 
-        input_C0 = Circle(radius=0.2, color=BLUE_C, stroke_color=BLACK, fill_opacity=1, stroke_width=0.1)
+        input_C0 = Circle(radius=0.2, color=BLUE_C, stroke_color=BLACK, fill_opacity=1)
         hidden_C0 = Circle(radius=0.2, color=WHITE, stroke_color=BLACK, fill_opacity=1)
         output_C0 = Circle(radius=0.2, color=RED_C, stroke_color=BLACK, fill_opacity=1)
         nn = VGroup(input_C0, hidden_C0, output_C0).arrange(buff=5).to_edge(UP)
@@ -471,12 +469,6 @@ class summary(Scene):
         self.play(Write(update))
         #self.add(index_labels(h1[0]), index_labels(h2[0]))
         self.wait()
-
-
-
-
-        
-
 
     
 class test(Scene): #Scrapped 

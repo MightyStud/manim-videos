@@ -377,6 +377,7 @@ class Grad_des(Scene):
         self.play(LaggedStart(DrawBorderThenFill(ax0),Create(graph0),Write(title0), Write(x_label), run_time=3, lag_ratio=0.5))
         self.play(Write(eq0, run_time=3))
         self.play(Write(VGroup(dot0, dot1)))
+        self.wait()
 
         # Gradient decent
 

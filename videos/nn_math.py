@@ -1,11 +1,10 @@
 from manim import *
 import itertools as it
-import numpy as np
 
 
 # background color
 config.background_color = "#1E1E1E"
-config.tex_template.add_to_preamble(r"\usepackage{physics}") # to enables physics extra latex package, can use \pdv for partial derivative 
+config.tex_template.add_to_preamble(r"\usepackage{physics} \usepackage{mathtools}") # to enables physics extra latex package, can use \pdv for partial derivative 
 
 
 class Intro(Scene): # SCRAPPED 
@@ -17,7 +16,7 @@ class Intro(Scene): # SCRAPPED
 
         self.add(X,Y,arrow)
 
-class network(Scene):
+class Network(Scene):
     def construct(self):
         
         input_C0 = Circle(radius=0.2, color=BLUE_C, stroke_color=BLACK, fill_opacity=1)
@@ -108,7 +107,7 @@ class network(Scene):
         self.wait()
 
 
-class forward(Scene):
+class Forward(Scene):
     def construct(self):
             # NN0 shallow 1 neuron
             network0 = NeuralNetworkMobject([1,1,1]).move_to(RIGHT*2.5)
@@ -174,7 +173,7 @@ class forward(Scene):
             self.play(Circumscribe(network2[0][1], run_time=2))
             self.wait()
 
-class notations(Scene):
+class Notations(Scene):
     def construct(self):
         equation0 = MathTex(r"""z_{j, i}^{[l]} &= \sum_k w_{j, k}^{[l]} a_{k, i}^{[l - 1]} + b_j^{[l]}, \\
             a_{j, i}^{[l]} &= g_j^{[l]}(z_{1, i}^{[l]}, \dots, z_{j, i}^{[l]}, \dots, z_{n^{[l]}, i}^{[l]}).""",
@@ -225,7 +224,7 @@ class notations(Scene):
         self.play(table.create())
         self.wait()
 
-class cost_for(Scene):
+class Cost_for(Scene):
     def construct(self):
         eq0 = MathTex(r"a^{[L]} =\hat{y}")
         eq1 = MathTex(r"J = f(\hat{y}, y)")
@@ -234,7 +233,7 @@ class cost_for(Scene):
         self.play(Write(eq))
         self.wait()
 
-class costs(Scene):
+class Costs(Scene):
     def construct(self):
 
         title = Title("Cross-entropy Loss")
@@ -271,8 +270,95 @@ class costs(Scene):
         self.play(AnimationGroup(Write(eq1), Write(eq2), Write(eq3)))
         self.wait()
 
+        ## GRADIENTS 
+        title2 = Title("Derivative (gradients) of Cross-entropy Loss")
+        # Binary Classification
+        eq12 = MathTex(r"""
+            \pdv{J}{a_i^{[L]}} = \frac{1}{m} \Bigl(\frac{1 - y_i}{1 - a_i^{[L]}} - \frac{y_i}{a_i^{[L]}}\Bigr)
+            """, font_size=15*2).move_to(rect1)
 
-class grad_des(Scene):
+        # Multiclass Classification
+        eq22 = MathTex(r"""
+            \pdv{J}{a_{j, i}^{[L]}} = -\frac{1}{m} \frac{y_{j, i}}{a_{j, i}^{[L]}}
+            """, font_size=20*2).move_to(rect2)
+
+        # Multi-Label Classification
+        eq32 = MathTex(r"""
+            \pdv{J}{a_{j, i}^{[L]}} = \frac{1}{m} \Bigl(\frac{1 - y_{j, i}}{1 - a_{j, i}^{[L]}} - \frac{y_{j, i}}{a_{j, i}^{[L]}}\Bigr)
+            """, font_size=15*2).move_to(rect3)     
+
+        self.play(Transform(title,title2))
+        self.play(AnimationGroup(Transform(eq1,eq12),Transform(eq2,eq22), Transform(eq3, eq32)))
+        self.wait()
+
+class Act(Scene):
+    def construct(self):
+        title = Title("Activation Functions")
+        # sigmoid
+        rect1 = Rectangle(height=3*1.05, width=4*1.05, color=WHITE, fill_opacity=0, stroke_width=0.5).to_edge(LEFT)
+        eq1 = MathTex(r"""
+            a_{j, i}^{[l]} &= g_j^{[l]}(z_{1, i}^{[l]}, \dots, z_{j, i}^{[l]}, \dots, z_{n^{[l]}, i}^{[l]}) \\
+            &= \sigma(z_{j, i}^{[l]}) \\
+            &= \frac{1}{1 + \exp(-z_{j, i}^{[l]})}
+        """, font_size=20).move_to(rect1)
+        label1 = Tex(r"Sigmoid Activation", color=WHITE,  font_size=32).move_to(rect1, DOWN).shift(DOWN)
+
+        # ReLU
+        rect2 = Rectangle(height=3*1.05, width=4*1.05, color=WHITE, fill_opacity=0, stroke_width=0.5)
+        eq2 = MathTex(r"""
+            a_{j, i}^{[l]} &= g_j^{[l]}(z_{1, i}^{[l]}, \dots, z_{j, i}^{[l]}, \dots, z_{n^{[l]}, i}^{[l]}) \\
+            &= \max(0, z_{j, i}^{[l]}) \\
+            &=
+            \begin{cases}
+            z_{j, i}^{[l]} &\text{if } z_{j, i}^{[l]} > 0, \\
+            0 &\text{otherwise}
+            \end{cases}
+        """, font_size=23).move_to(rect2)
+        label2 = Tex(r"ReLU Activation", color=WHITE,  font_size=32).move_to(rect2, DOWN).shift(DOWN)
+
+        # softmax
+        rect3 = Rectangle(height=3*1.05, width=4*1.05, color=WHITE, fill_opacity=0, stroke_width=0.5).to_edge(RIGHT)
+        eq3 = MathTex(r"""
+            a_{j, i}^{[l]} &= g_j^{[l]}(z_{1, i}^{[l]}, \dots, z_{j, i}^{[l]}, \dots, z_{n^{[l]}, i}^{[l]}) \\
+            &= \frac{\exp(z_{j, i}^{[l]})}{\sum_p \exp(z_{p, i}^{[l]})}
+        """, font_size=20).move_to(rect3)       
+        label3 = Tex(r"Softmax Activation", color=WHITE,  font_size=32).move_to(rect3, DOWN).shift(DOWN)
+
+        self.play(Write(title))
+        self.play(AnimationGroup(Create(rect1),Create(rect2),Create(rect3)))
+        self.play(AnimationGroup(Write(label1),Write(label2),Write(label3)))
+        self.play(AnimationGroup(Write(eq1), Write(eq2), Write(eq3)))
+        self.wait()
+
+        ## GRADIENTS 
+        title2 = Title("Derivative (gradients) of Activation Functions")
+        # sigmoid
+        eq12 = MathTex(r"""
+            \pdv{a_{j, i}^{[l]}}{z_{j, i}^{[l]}} &=a_{j, i}^{[l]} (1 - a_{j, i}^{[l]}) \\
+            \pdv{a_{p, i}^{[l]}}{z_{j, i}^{[l]}} = 0, \quad \forall p \ne j
+            """, font_size=20*1.5).move_to(rect1)
+
+        # relu
+        eq22 = MathTex(r"""
+            \pdv{a_{j, i}^{[l]}}{z_{j, i}^{[l]}} &\coloneqq
+            \begin{cases}
+            1 &\text{if } z_{j, i}^{[l]} > 0, \\
+            0 &\text{otherwise},
+            \end{cases} \\
+            \pdv{a_{p, i}^{[l]}}{z_{j, i}^{[l]}} &= 0, \quad \forall p \ne j
+            """, font_size=20*1.5).move_to(rect2)
+
+        # softmax
+        eq32 = MathTex(r"""
+            \pdv{a_{j, i}^{[l]}}{z_{j, i}^{[l]}} &= a_{j, i}^{[l]} (1 - a_{j, i}^{[l]}), \notag \\
+            \pdv{a_{p, i}^{[l]}}{z_{j, i}^{[l]}} &= -a_{p, i}^{[l]} a_{j, i}^{[l]}, \quad \forall p \ne j. \notag
+            """, font_size=18*1.5).move_to(rect3)     
+
+        self.play(Transform(title,title2))
+        self.play(AnimationGroup(Transform(eq1,eq12),Transform(eq2,eq22), Transform(eq3, eq32)))
+        self.wait()
+
+class Grad_des(Scene):
     def construct(self):
         
         # Minimum of a Function
@@ -281,9 +367,6 @@ class grad_des(Scene):
         graph0 = ax0.plot(lambda x: x**4 +3*x**3 + 0.1*x**2 - 2.3*x+ 4, color=BLUE, x_range=[-2.855,1.162])
         graph0_d = ax0.plot(lambda x: 4*x**3+9*x**2+0.2*x-2.3)
         x_label = ax0.get_x_axis_label("x")
-
-        
-    
 
         eq0 = MathTex(r"f'(x) &= 0 \quad \text{solve for } x \\ x_{1} &= 0.452, \\ x_{2} &= -2.095", font_size=40).to_corner(LEFT)
         eq0[0][16:18].set_color(RED)
@@ -300,7 +383,7 @@ class grad_des(Scene):
         title1 = Title("Gradient Descent")
         eq1 = MathTex(r"J &= f(\hat{y}, y), \quad a^{[L]} = \hat{y} \\ a^{[L]} &= g(z^{[L]}), \quad z = h(w^{[L]},b^{[L]},a^{[L-1]}) \\  a^{[L-1]} &= g(z^{[L-1]}), \quad z = h(w^{[L-1]},b^{[L-1]},a^{[L-2]}) \\ a^{[L-2]} &= \dots", font_size=28).to_corner(LEFT)
         eq2_0 = Tex(r"$J(x)$",font_size=50)
-        eq2_1 = Tex(r"$J_{\text{new}} = J_{\text{old}} - J_{\text{old}}' * \alpha$",font_size=50)
+        eq2_1 = Tex(r"$x_{\text{new}} = x_{\text{old}} - \dv{J}{x_{\text{old}}} * \alpha$",font_size=50)
         eq2 = VGroup(eq2_0,eq2_1).arrange(DOWN, center=False, aligned_edge=LEFT).to_edge(LEFT)
         value = ValueTracker(1)
         
@@ -334,7 +417,7 @@ class grad_des(Scene):
         )
         
         slope_value_text = (
-            Tex(r"$J'$/Slope: ", font_size=40)
+            Tex(r"$\dv{J}{x}$ (Slope): ", font_size=40)
             .next_to(ax0, DOWN, buff=0.1)
             .set_color(YELLOW)
             .add_background_rectangle()
@@ -347,12 +430,12 @@ class grad_des(Scene):
             .set_color(YELLOW)
         )
 
-        self.play(Transform(title0,title1))
         self.play(FadeOut(eq0,dot0,dot1))
         self.play(Write(eq1))
         self.wait()
+        
         self.play(FadeOut(eq1))
-        self.play(Write(eq2))
+        self.play(AnimationGroup(Write(eq2), Transform(title0,title1)))
         self.play(Write(VGroup(dot2, moving_slope,slope_value_text, slope_value, v_line, arrow)))
         self.play(value.animate.set_value(0.452), run_time=5, rate_functions=rate_functions.ease_out_sine)
         #self.play(FadeOut(dot2,moving_slope,slope_value))
@@ -360,8 +443,9 @@ class grad_des(Scene):
         value.set_value(-2.8)
         #self.play(FadeIn(dot2,moving_slope,slope_value))
         self.play(value.animate.set_value(-2.095), run_time=5, rate_functions=rate_functions.ease_out_sine)
+        self.wait()
 
-class back(Scene):
+class Back(Scene):
     def construct(self):
         title = Title(r"$J =  f(a^{[L]}, y), \quad a^{[l]} = g(z^{[l]}),  \quad z^{[l]} = w^{[l]} * a^{[l-1]}+b^{[l]}$").to_edge(UP)
 
@@ -410,7 +494,7 @@ class back(Scene):
         #elf.add(index_labels(eq2[0]))
         self.wait()
 
-class summary(Scene):
+class Summary(Scene):
     def construct(self):
 
         input_C0 = Circle(radius=0.2, color=BLUE_C, stroke_color=BLACK, fill_opacity=1)
@@ -469,9 +553,8 @@ class summary(Scene):
         self.play(Write(update))
         #self.add(index_labels(h1[0]), index_labels(h2[0]))
         self.wait()
-
-    
-class test(Scene): #Scrapped 
+ 
+class Test(Scene): #Scrapped 
     def construct(self):
         mynetwork = NeuralNetworkMobject([1,3,5,2,1])
         mynetwork.label_inputs('x')

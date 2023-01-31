@@ -1,5 +1,6 @@
 from manim import *
 import itertools as it
+import numpy as np
 
 
 # background color
@@ -7,14 +8,21 @@ config.background_color = "#1E1E1E"
 config.tex_template.add_to_preamble(r"\usepackage{physics} \usepackage{mathtools}") # to enables physics extra latex package, can use \pdv for partial derivative 
 
 
-class Intro(Scene): # SCRAPPED 
+class Intro(Scene): 
     def construct(self):
+        arrowf = Arrow(start=LEFT*6, end=RIGHT*6).shift(UP)
+        arrowb = Arrow(start=RIGHT*6, end=LEFT*6).shift(DOWN)
 
-        X = MathTex("X", font_size=300).shift(LEFT*4)
-        Y = MathTex("Y", font_size=300).shift(RIGHT*4)
-        arrow = Arrow(start=X.get_center() + [1,0,0], end=Y.get_center() + [-1,0,0])
+        f = Text("Forward Propagation \t \t \t... ", font="sans-serif", font_size=30).move_to(arrowf).shift(UP).shift(LEFT*3)
+        f2 = Text("الانتشار  الامامي", font="sans-serif",font_size=30).move_to(arrowf).shift(UP).shift(RIGHT*4)
+        b = Text("Backward Propagation\t \t \t...", font="sans-serif",  font_size=30).move_to(arrowb).shift(UP).shift(LEFT*3)
+        b2 = Text("الانتشار  الخلفي", font="sans-serif", font_size=30).move_to(arrowb).shift(UP).shift(RIGHT*4)
 
-        self.add(X,Y,arrow)
+
+        self.play(Write(arrowf),Write(f), Write(f2, reverse=True, remover=False))
+        self.wait()
+        self.play(Write(arrowb),Write(b), Write(b2, reverse=True, remover=False))
+        self.wait()
 
 class Network(Scene):
     def construct(self):
@@ -368,15 +376,17 @@ class Grad_des(Scene):
         graph0_d = ax0.plot(lambda x: 4*x**3+9*x**2+0.2*x-2.3)
         x_label = ax0.get_x_axis_label("x")
 
-        eq0 = MathTex(r"f'(x) &= 0 \quad \text{solve for } x \\ x_{1} &= 0.452, \\ x_{2} &= -2.095", font_size=40).to_corner(LEFT)
-        eq0[0][16:18].set_color(RED)
-        eq0[0][25:27].set_color(RED)
+        eq0 = MathTex(r"f'(x) &= 0 \quad \text{solve for } x, \\ x_{1} &= 0.452, \\ x_{2} &= -2.095", font_size=40).to_corner(LEFT)
+        eq0[0][17:19].set_color(RED)
+        eq0[0][26:28].set_color(RED)
         dot0 = Dot(color=RED).move_to(ax0.c2p(-2.095, 0.936,0))
+        v_line0 = ax0.get_vertical_line(ax0.c2p(-2.095, 0.936,0), line_config={"dashed_ratio": 0.70})
         dot1 = Dot(color=RED).move_to(ax0.c2p(0.452, 3.3,0))
+        v_line1 = ax0.get_vertical_line(ax0.c2p(0.452, 3.3,0), line_config={"dashed_ratio": 0.70})
 
         self.play(LaggedStart(DrawBorderThenFill(ax0),Create(graph0),Write(title0), Write(x_label), run_time=3, lag_ratio=0.5))
         self.play(Write(eq0, run_time=3))
-        self.play(Write(VGroup(dot0, dot1)))
+        self.play(Write(VGroup(dot0, dot1, v_line0, v_line1)))
         self.wait()
 
         # Gradient decent
@@ -384,7 +394,7 @@ class Grad_des(Scene):
         title1 = Title("Gradient Descent")
         eq1 = MathTex(r"J &= f(\hat{y}, y), \quad a^{[L]} = \hat{y} \\ a^{[L]} &= g(z^{[L]}), \quad z = h(w^{[L]},b^{[L]},a^{[L-1]}) \\  a^{[L-1]} &= g(z^{[L-1]}), \quad z = h(w^{[L-1]},b^{[L-1]},a^{[L-2]}) \\ a^{[L-2]} &= \dots", font_size=28).to_corner(LEFT)
         eq2_0 = Tex(r"$J(x)$",font_size=50)
-        eq2_1 = Tex(r"$x_{\text{new}} = x_{\text{old}} - \dv{J}{x_{\text{old}}} * \alpha$",font_size=50)
+        eq2_1 = Tex(r"$x_{\text{new}} \coloneqq x_{\text{old}} - \dv{J(x)}{x_{\text{old}}} * \alpha$",font_size=50)
         eq2 = VGroup(eq2_0,eq2_1).arrange(DOWN, center=False, aligned_edge=LEFT).to_edge(LEFT)
         value = ValueTracker(1)
         
@@ -418,7 +428,7 @@ class Grad_des(Scene):
         )
         
         slope_value_text = (
-            Tex(r"$\dv{J}{x}$ (Slope): ", font_size=40)
+            Tex(r"$\dv{J(x)}{x}$ (Slope): ", font_size=40)
             .next_to(ax0, DOWN, buff=0.1)
             .set_color(YELLOW)
             .add_background_rectangle()
@@ -431,13 +441,37 @@ class Grad_des(Scene):
             .set_color(YELLOW)
         )
 
-        self.play(FadeOut(eq0,dot0,dot1))
+        self.play(FadeOut(eq0,dot0,dot1,v_line0, v_line1))
         self.play(Write(eq1))
         self.wait()
         
         self.play(FadeOut(eq1))
         self.play(AnimationGroup(Write(eq2), Transform(title0,title1)))
         self.play(Write(VGroup(dot2, moving_slope,slope_value_text, slope_value, v_line, arrow)))
+        
+        # Steps
+        def powspace(start, stop, power, num):
+            start = np.power(start, 1/float(power))
+            stop = np.power(stop, 1/float(power))
+            return np.power( np.linspace(start, stop, num=num), power) 
+
+        steps1 = powspace(start=1,stop=0.452, power=20000, num=10)
+        #steps1 = np.linspace(1,0.452, num=10)
+
+        for i in steps1:
+            self.play(value.animate.set_value(i), run_time=0.8, rate_functions=rate_functions.linear)
+
+        self.wait()
+        value.set_value(-2.8)
+
+        steps2 = powspace(start=2.8,stop=2.095, power=20000, num=10) * - 1.0
+        #steps2 = np.linspace(-2.8,-2.095, num=10)
+        for i in steps2:
+            self.play(value.animate.set_value(i), run_time=0.8, rate_functions=rate_functions.linear)
+
+        # continous
+        self.wait()
+        value.set_value(1)
         self.play(value.animate.set_value(0.452), run_time=5, rate_functions=rate_functions.ease_out_sine)
         #self.play(FadeOut(dot2,moving_slope,slope_value))
         self.wait()
@@ -543,7 +577,7 @@ class Summary(Scene):
         h2[0][65].set_color(BLUE)
         o2[0][17].set_color(RED)
 
-        update = Tex(r"Gradient Descent: parameter$_{\text{new}}$ = parameter$_{\text{old}}$ - $\nabla$ parameter$_{\text{old}} * \alpha $", font_size=30).to_edge(DOWN)
+        update = Tex(r"Gradient Descent: parameter$_{\text{new}}$ $\coloneqq$ parameter$_{\text{old}}$ - $\nabla$ parameter$_{\text{old}} * \alpha $", font_size=30).to_edge(DOWN)
         self.play(Create(f2), Write(f2_label, reverse=True))
         self.add(f2_label)
         self.wait()

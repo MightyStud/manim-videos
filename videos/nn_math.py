@@ -470,14 +470,14 @@ class Grad_des(Scene):
             self.play(value.animate.set_value(i), run_time=0.8, rate_functions=rate_functions.linear)
 
         # continous
+        self.add(value.set_value(1))
         self.wait()
-        value.set_value(1)
-        self.play(value.animate.set_value(0.452), run_time=5, rate_functions=rate_functions.ease_out_sine)
+        self.play(value.animate.set_value(0.452), run_time=5, rate_functions=rate_functions.ease_in_out_expo)
         #self.play(FadeOut(dot2,moving_slope,slope_value))
-        self.wait()
         value.set_value(-2.8)
+        self.wait()
         #self.play(FadeIn(dot2,moving_slope,slope_value))
-        self.play(value.animate.set_value(-2.095), run_time=5, rate_functions=rate_functions.ease_out_sine)
+        self.play(value.animate.set_value(-2.095), run_time=5, rate_functions=rate_functions.ease_in_out_expo)
         self.wait()
 
 class Back(Scene):

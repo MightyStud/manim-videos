@@ -598,9 +598,9 @@ class More(Scene):
     def construct(self):
         more = BulletedList("Momentum based optimizers", "Batch, mini-batch and stochastic gradient descent",
                             "Batch normalization", "L1, L2 regularization", "Dropouts", "Early stopping",
-                            "Ensemble methods", "Transfer learning" , "And many more ...", 
-                            font_size= 30).to_edge(LEFT)
-        self.play(Write(more))
+                            "Ensemble methods", "Transfer learning" , "Learning Rate Schedulers", "And many more ...", 
+                            font_size= 30, buff=MED_SMALL_BUFF).to_edge(LEFT)
+        self.play(Write(more, run_time= 3))
         self.wait()
 
 class Test(Scene): #Scrapped 

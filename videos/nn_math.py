@@ -594,6 +594,15 @@ class Summary(Scene):
         #self.add(index_labels(o2[0]), index_labels(h2[0]))
         self.wait()
  
+class More(Scene):
+    def construct(self):
+        more = BulletedList("Momentum based optimizers", "Batch, mini-batch and stochastic gradient descent",
+                            "Batch normalization", "L1, L2 regularization", "Dropouts", "Early stopping",
+                            "Ensemble methods", "Transfer learning" , "And many more ...", 
+                            font_size= 30).to_edge(LEFT)
+        self.play(Write(more))
+        self.wait()
+
 class Test(Scene): #Scrapped 
     def construct(self):
         mynetwork = NeuralNetworkMobject([1,3,5,2,1])

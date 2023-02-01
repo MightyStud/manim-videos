@@ -548,7 +548,7 @@ class Summary(Scene):
         f1_label = Tex(r"Forward Propagation", font_size=40).next_to(hidden_C0, DOWN*3).shift((0,0.5,0))
         i1 = MathTex(r"x", color=BLUE, font_size=80).next_to(input_C0, DOWN*6).shift((0,0.5,0))
         h1 = MathTex(r"z^{[1]} &= w^{[1]}x^{[0]}+b^{[1]} \\ a^{[1]} &= g(z^{[1]})", font_size=25).next_to(hidden_C0, DOWN*6).shift((0,0.5,0))
-        o1 = MathTex(r"z^{[2]} &= w^{[2]}a^{[1]}+b^{[2]} \\ a^{[2]} &= g(z^{[2]}) \\ \text{loss} &= J(a^{[2]},y)", font_size=20).next_to(output_C0, DOWN*6).shift((0,0.5,0))
+        o1 = MathTex(r"z^{[2]} &= w^{[2]}a^{[1]}+b^{[2]} \\ a^{[2]} &= g(z^{[2]}) \\ \hat{y} &=  a^{[2]} \\ \text{loss} &= J(\bar{y},y)", font_size=20).next_to(output_C0, DOWN*6).shift((0,0.5,0))
         o1[0][-2].set_color(RED)
         h1[0][9].set_color(BLUE)
 
@@ -565,14 +565,17 @@ class Summary(Scene):
         h2 = MathTex(r""" \pdv{a^{[1]}}{z^{[1]}} &= g'(z^{[1]}) \\ 
             \pdv{J}{z^{[1]}} &= \pdv{J}{a^{[1]}} \pdv{a^{[1]}}{z^{[1]}} \\
             \pdv{J}{w^{[1]}} &= \pdv{J}{z^{[1]}} x^{[0]} \\
-            \pdv{J}{b^{[1]}} &= \pdv{J}{z^{[1]}}
+            \pdv{J}{b^{[1]}} &= \pdv{J}{z^{[1]}} \\
+            \pdv{J}{x^{[0]}} &= \pdv{J}{z^{[1]}} w^{[1]}
             """, font_size=22).next_to(hidden_C0, DOWN).shift(DOWN*1.5 - (0,2,0)).shift((0,0.7,0))
         o2 = MathTex(r"""\pdv{J}{a^{[2]}} &= J'(a^{[2]},y), \hspace{0.3cm}  \pdv{a^{[2]}}{z^{[2]}} = g'(z^{[2]}) \\
             \pdv{J}{z^{[2]}} &= \pdv{J}{a^{[2]}} \pdv{a^{[2]}}{z^{[2]}} \\
             \pdv{J}{w^{[2]}} &= \pdv{J}{z^{[2]}} a^{[1]} \\ 
             \pdv{J}{b^{[2]}} &= \pdv{J}{z^{[2]}} \\
-            \pdv{J}{a^{[1]}} &= \pdv{J}{z^{[2]}} w^{[2]}
+            \pdv{J}{a^{[1]}} &= \pdv{J}{z^{[2]}} w^{[2]} \\
             """, font_size=20).next_to(output_C0, DOWN).shift(DOWN*1.5 - (0,2,0)).shift((0,0.7,0))
+        
+        strikethrough = Line(start=h2[0][89].get_left() + (-0.15,-0.05,0), end=h2[0][106].get_right() + (0.15,0.05,0), stroke_width=1.5)
   
         h2[0][65].set_color(BLUE)
         o2[0][17].set_color(RED)
@@ -583,6 +586,7 @@ class Summary(Scene):
         self.wait()
         self.play(Write(o2, run_time=4))
         self.play(Write(h2, run_time=3))
+        self.play(Write(strikethrough))
         self.play(Write(i2))
         self.wait()
         self.play(Write(update))

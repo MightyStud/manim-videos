@@ -342,8 +342,8 @@ class Act(Scene):
         title2 = Title("Derivative (gradients) of Activation Functions")
         # sigmoid
         eq12 = MathTex(r"""
-            \pdv{a_{j, i}^{[l]}}{z_{j, i}^{[l]}} &=a_{j, i}^{[l]} (1 - a_{j, i}^{[l]}) \\
-            \pdv{a_{p, i}^{[l]}}{z_{j, i}^{[l]}} = 0, \quad \forall p \ne j
+            \pdv{a_{j, i}^{[l]}}{z_{j, i}^{[l]}} &= a_{j, i}^{[l]} (1 - a_{j, i}^{[l]}) \\
+            \pdv{a_{p, i}^{[l]}}{z_{j, i}^{[l]}} &= 0, \quad \forall p \ne j
             """, font_size=20*1.5).move_to(rect1)
 
         # relu
@@ -480,7 +480,7 @@ class Grad_des(Scene):
         self.play(value.animate.set_value(-2.095), run_time=5, rate_functions=rate_functions.ease_out_expo)
         self.wait()
 
-class Back(Scene):
+class Back2(Scene):
     def construct(self):
         title = Title(r"$J =  f(a^{[L]}, y), \quad a^{[l]} = g(z^{[l]}),  \quad z^{[l]} = w^{[l]} * a^{[l-1]}+b^{[l]}$").to_edge(UP)
 
@@ -494,7 +494,8 @@ class Back(Scene):
                       \pdv{J}{b_{j, k}^{[l]}} &= \sum_i \pdv{J}{z_{j, i}^{[l]}}""", font_size= 33).to_corner(RIGHT).shift(DOWN)
 
 
-        self.play(Write(title)) 
+        self.play(Write(title))
+
         self.play((Write(eq0, run_time =5)))
         self.wait()
         self.play((Write(eq1, run_time =5)))
@@ -512,11 +513,7 @@ class Back(Scene):
         self.play(eq0_1[0][14:25].animate.set_color(YELLOW),eq1_1[0][14:].animate.set_color(YELLOW), eq3[0][16:27].animate.set_color(YELLOW))
         self.wait()
         #self.add(index_labels(eq0_1[0]), index_labels(eq1_1[0]))
-        
-
-
-
-
+  
         eq2 = MathTex(r"\pdv{J}{z_{j, i}^{[l]}} = \sum_j \pdv{J}{a_{j, i}^{[l]}} \pdv{a_{j, i}^{[l]}}{z_{j, i}^{[l]}}", font_size = 80)
         eq2[0][0:11].set_color(YELLOW)
 

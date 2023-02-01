@@ -576,7 +576,7 @@ class Summary(Scene):
             """, font_size=20).next_to(output_C0, DOWN).shift(DOWN*1.5 - (0,2,0)).shift((0,0.7,0))
         
         strikethrough = Line(start=h2[0][89].get_left() + (-0.15,-0.05,0), end=h2[0][106].get_right() + (0.15,0.05,0), stroke_width=1.5)
-        eq_arrow = Arrow(start=o2[0][106].get_left() + (-0.15,-0.05,0), end=h2[0][41].get_right() + (0.15,-0.05,0), stroke_width=1.5)
+        eq_arrow = Arrow(start=o2[0][106].get_left() + (-0.15,-0.05,0), end=h2[0][41].get_right() + (0.15,-0.05,0), stroke_width=1.5, max_tip_length_to_length_ratio=0.05)
   
         h2[0][65].set_color(BLUE)
         o2[0][17].set_color(RED)

@@ -162,8 +162,8 @@ class Forward(Scene):
 
             equation2 = MathTex(r"""z_{1}^{[2]} &= w_{1,1}^{[2]}a_{1}^{[1]} + w_{1,2}^{[2]}a_{2}^{[1]} + w_{1,3}^{[2]}a_{3}^{[1]} + b_{1}^{[2]}  \\ 
                                 z_{2}^{[2]} &= w_{2,1}^{[2]}a_{1}^{[1]} + w_{2,2}^{[2]}a_{2}^{[1]} + w_{2,3}^{[2]}a_{3}^{[1]} + b_{2}^{[2]}  \\
-                                a_{1}^{[2]} &= g(Z_{1}^{[2]}) \\ 
-                                a_{2}^{[2]} &= g(Z_{2}^{[2]})""", font_size=40).to_edge(LEFT)
+                                a_{1}^{[2]} &= g(z_{1}^{[2]}) \\ 
+                                a_{2}^{[2]} &= g(z_{2}^{[2]})""", font_size=40).to_edge(LEFT)
 
             layer0 = Tex(r"Input \\ $[l=0]$", font_size=25)
             layer1 = Tex(r"$[l=1]$", font_size=25)
@@ -480,7 +480,7 @@ class Grad_des(Scene):
         self.play(value.animate.set_value(-2.095), run_time=5, rate_functions=rate_functions.ease_out_expo)
         self.wait()
 
-class Back2(Scene):
+class Back(Scene):
     def construct(self):
         title = Title(r"$J =  f(a^{[L]}, y), \quad a^{[l]} = g(z^{[l]}),  \quad z^{[l]} = w^{[l]} * a^{[l-1]}+b^{[l]}$").to_edge(UP)
 
@@ -576,6 +576,7 @@ class Summary(Scene):
         eq_arrow = Arrow(start=o2[0][106].get_left() + (-0.15,-0.05,0), end=h2[0][41].get_right() + (0.15,-0.05,0), stroke_width=1.5, max_tip_length_to_length_ratio=0.05)
   
         h2[0][65].set_color(BLUE)
+        h2[0][90].set_color(BLUE)
         o2[0][17].set_color(RED)
 
         update = Tex(r"Gradient Descent: parameter$_{\text{new}}$ $\coloneqq$ parameter$_{\text{old}}$ - $\nabla$ parameter$_{\text{old}} * \alpha $", font_size=30).to_edge(DOWN)

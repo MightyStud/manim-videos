@@ -17,16 +17,16 @@ class NeuralNetworkMobject(VGroup):
         "neuron_stroke_width": 1.5,
         "neuron_fill_color": GREEN,
         "edge_color": LIGHT_GREY,
-        "edge_stroke_width": 2,
+        "edge_stroke_width": 1,
         "edge_propogation_color": YELLOW,
         "edge_propogation_time": 1,
-        "max_shown_neurons": 12,
+        "max_shown_neurons": 10,
         "brace_for_large_layers": True,
         "average_shown_activation_of_large_layer": True,
         "include_output_labels": False,
         "arrow": True,
         "arrow_tip_size": 0.05,
-        "left_size": 1,
+        "left_size": 0,
         "neuron_fill_opacity": 1
     }
     # Constructor with parameters of the neurons in a list
@@ -121,24 +121,25 @@ class NeuralNetworkMobject(VGroup):
                 stroke_width=self.CONFIG['edge_stroke_width'],
                 tip_length=self.CONFIG['arrow_tip_size'],
                 
-            )
+            ).set_opacity(0.2)
         return Line(
             neuron1.get_center(),
             neuron2.get_center(),
             buff=self.CONFIG['neuron_radius'],
             stroke_color=self.CONFIG['edge_color'],
             stroke_width=self.CONFIG['edge_stroke_width'],
-        )
+            
+        ).set_opacity(0.2)
     
     # Labels each input neuron with a char l or a LaTeX character
     def label_inputs(self, l):
-        self.input_labels = VGroup()
+        self.output_labels = VGroup()
         for n, neuron in enumerate(self.layers[0].neurons):
             label = MathTex(f"{l}_"+"{"+f"{n + 1}"+"}")
             label.set_height(0.3 * neuron.get_height())
             label.move_to(neuron)
-            self.input_labels.add(label)
-        self.add(self.input_labels)
+            self.output_labels.add(label)
+        self.add(self.output_labels)
 
     # Labels each output neuron with a char l or a LaTeX character
     def label_outputs(self, l):
@@ -166,7 +167,7 @@ class NeuralNetworkMobject(VGroup):
         self.output_labels = VGroup()
         for layer in self.layers[1:-1]:
             for n, neuron in enumerate(layer.neurons):
-                label = MathTex(f"{l}_{n + 1}")
+                label = MathTex(f"{l}_"+"{"+f"{n + 1}"+"}")
                 label.set_height(0.4 * neuron.get_height())
                 label.move_to(neuron)
                 self.output_labels.add(label)
@@ -181,6 +182,6 @@ class Dataset(Scene):
         network0.label_outputs_text([0,1,2,3,4,5,6,7,8,9])
         network0.label_hidden_layers('a')
 
-        self.play(Write(network0, run_time=5))
+        self.play(Write(network0, run_time=10))
         self.wait()
         
